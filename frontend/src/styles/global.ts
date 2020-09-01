@@ -19,7 +19,7 @@ export default createGlobalStyle`
     cursor: pointer;
   }
   #root {
-    max-width: 1300px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 60px 20px;
   }
