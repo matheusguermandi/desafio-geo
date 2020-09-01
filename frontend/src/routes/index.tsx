@@ -5,7 +5,8 @@ import Initial from '../pages/Initial';
 
 const Routes: React.FC = () => (
   <Switch>
-    <Route path="/" exact />
     <Route path="/" exact component={Initial} />
   </Switch>
 );
+
+export default Routes;
