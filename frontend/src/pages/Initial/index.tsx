@@ -19,6 +19,7 @@ import {
   ContentReset,
   ContentCentral,
   ContentMap,
+  ContentTable,
 } from './styles';
 
 type Location = Array<{
@@ -38,11 +39,6 @@ const Initial: React.FC = () => {
 
   const [locations, setlocations] = useState<Location>([
     {
-      name: 'Eduardo',
-      position: [-20.4027236, -49.9786467],
-      weight: '120Kg',
-    },
-    {
       name: 'Matheus',
       position: [-20.4027236, -49.96],
       weight: '80Kg',
@@ -51,6 +47,11 @@ const Initial: React.FC = () => {
       name: 'Thaís',
       position: [-20.4027236, -49.95],
       weight: '70Kg',
+    },
+    {
+      name: 'Davi',
+      position: [-20.4027236, -49.9786467],
+      weight: '120Kg',
     },
   ]);
 
@@ -61,6 +62,12 @@ const Initial: React.FC = () => {
     event: FormEvent<HTMLFormElement>,
   ): Promise<void> {
     event.preventDefault();
+
+    if (!customer || !weight || !search) {
+      alert('Ooops ... Preencha os campos corretamente!');
+      return;
+    }
+
     client
       .geocode({
         params: {
@@ -81,7 +88,8 @@ const Initial: React.FC = () => {
         ]);
       })
       .catch(e => {
-        console.log(e.response.data.error_message);
+        setSearch('');
+        alert('Atenção ... Endereço não encontrado, tente novamente');
       });
   }
 
@@ -149,6 +157,35 @@ const Initial: React.FC = () => {
             ))}
           </Map>
         </ContentMap>
+
+        <ContentTable>
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Rua</th>
+                <th>Cidade</th>
+                <th>País</th>
+                <th>Peso</th>
+                <th>LAT</th>
+                <th>LNG</th>
+              </tr>
+            </thead>
+            <tbody>
+              {locations.map(location => (
+                <tr>
+                  <th>{location.name}</th>
+                  <th>rua</th>
+                  <th>Cidade</th>
+                  <th>País</th>
+                  <th>{location.weight}</th>
+                  <th>{location.position[0]}</th>
+                  <th>{location.position[1]}</th>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </ContentTable>
       </ContentCentral>
     </Container>
   );

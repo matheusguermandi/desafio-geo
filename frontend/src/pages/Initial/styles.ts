@@ -111,11 +111,50 @@ export const ContentCentral = styled.div`
 
   width: 75%;
   max-width: 900px;
-  max-height: 450px;
 `;
 
 export const ContentMap = styled.div`
   flex: 1;
   border: 2px solid #bcbcbc;
   border-radius: 5px;
+
+  max-width: 900px;
+
+  height: 450px;
+  max-height: 450px;
+`;
+
+export const ContentTable = styled.div`
+  display: flex;
+  flex: 1;
+  border-radius: 5px;
+  margin-top: 10px;
+
+  table {
+    border: 2px solid #bcbcbc;
+    border-radius: 5px;
+    flex: 1;
+
+    thead {
+      background-color: #a5a5a5;
+      color: #fff;
+
+      th {
+        padding: 5px;
+      }
+    }
+
+    tbody {
+      background-color: #e1e1e1;
+      color: #000;
+
+      th {
+        padding: 5px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    }
+  }
 `;
