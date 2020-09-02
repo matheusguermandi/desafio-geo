@@ -22,49 +22,86 @@ import {
   ContentTable,
 } from './styles';
 
-type Location = Array<{
+interface IDelivery {
   name: string;
-  position: [number, number];
   weight: string;
+  street: string;
+  num: number;
+  neighborhood: string;
+  complement?: string;
+  city: string;
+  state: string;
+  country: string;
+  latitude: number;
+  longitude: number;
+}
+
+type IDeliveries = Array<{
+  id?: string;
+  name: string;
+  street: string;
+  city: string;
+  country: string;
+  weight: string;
+  latitude: number;
+  longitude: number;
 }>;
+
+interface IGeolocation {
+  latitude: number;
+  longitude: number;
+}
 
 L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.5.0/dist/images/';
 
 const Initial: React.FC = () => {
-  const [customer, setCustomer] = useState('');
-  const [weight, setweight] = useState('');
-  const [search, setSearch] = useState('');
+  const client = new Client();
+  const API_KEY = 'AIzaSyAJwTL_WQK7sIhlccPw7XhSLL_uoqlu_ic';
+
+  const [nameCustomer, setNameCustomer] = useState('');
+  const [weightCustomer, setWeightCustomer] = useState('');
+  const [search, setSearch] = useState(
+    'rua amazonas, 3814, centro, votuporanga',
+  );
+  const [geolocation, setGeoloaction] = useState<IGeolocation>();
 
   const position: [number, number] = [-20.4027236, -49.9786467];
 
-  const [locations, setlocations] = useState<Location>([
+  const [delivery, setDelivery] = useState<IDelivery>({
+    name: '',
+    weight: '',
+    num: 0,
+    street: '',
+    neighborhood: '',
+    complement: '',
+    state: '',
+    city: '',
+    country: '',
+    latitude: 0,
+    longitude: 0,
+  });
+
+  const [deliveries, setDeliveries] = useState<IDeliveries>([
     {
       name: 'Matheus',
-      position: [-20.4027236, -49.96],
       weight: '80Kg',
-    },
-    {
-      name: 'Thaís',
-      position: [-20.4027236, -49.95],
-      weight: '70Kg',
-    },
-    {
-      name: 'Davi',
-      position: [-20.4027236, -49.9786467],
-      weight: '120Kg',
+      street: 'Nassif miguel',
+      city: 'Votuporanga',
+      country: 'Brasil',
+      latitude: -20.4028,
+      longitude: -49.97882,
     },
   ]);
 
-  const API_KEY = 'AIzaSyAJwTL_WQK7sIhlccPw7XhSLL_uoqlu_ic';
-  const client = new Client();
-
-  async function handleSearch(
-    event: FormEvent<HTMLFormElement>,
-  ): Promise<void> {
-    event.preventDefault();
-
-    if (!customer || !weight || !search) {
+  async function handleSearch(): Promise<void> {
+    if (!nameCustomer || !weightCustomer || !search || nameCustomer === '') {
       alert('Ooops ... Preencha os campos corretamente!');
+      return;
+    }
+
+    if (Number(weightCustomer) <= 0) {
+      alert('Ooops ...Digite uma valor válido para o peso da entrega');
+      setWeightCustomer('');
       return;
     }
 
@@ -77,15 +114,25 @@ const Initial: React.FC = () => {
         timeout: 1000,
       })
       .then(r => {
+        console.log(r.data.results[0]);
+
         const { lat, lng } = r.data.results[0].geometry.location;
-        setlocations([
-          ...locations,
-          {
-            name: customer,
-            position: [lat, lng],
-            weight,
-          },
-        ]);
+
+        setGeoloaction({ latitude: lat, longitude: lng });
+
+        setDelivery({
+          name: nameCustomer,
+          weight: weightCustomer,
+          street: r.data.results[0].address_components[1].long_name,
+          num: Number(r.data.results[0].address_components[0].long_name),
+          neighborhood: r.data.results[0].address_components[2].long_name,
+          complement: 'Complemento',
+          city: r.data.results[0].address_components[3].long_name,
+          state: r.data.results[0].address_components[4].long_name,
+          country: r.data.results[0].address_components[5].long_name,
+          latitude: lat,
+          longitude: lng,
+        });
       })
       .catch(e => {
         setSearch('');
@@ -93,44 +140,99 @@ const Initial: React.FC = () => {
       });
   }
 
+  async function handleForm(): Promise<void> {
+    if (
+      !nameCustomer ||
+      !weightCustomer ||
+      !search ||
+      !geolocation?.latitude ||
+      !geolocation?.longitude
+    ) {
+      alert('Ooops ... Preencha os campos corretamente!');
+      return;
+    }
+
+    setDeliveries([
+      ...deliveries,
+      {
+        name: delivery.name,
+        weight: delivery.weight,
+        city: delivery.city,
+        country: delivery.country,
+        street: delivery.street,
+        latitude: delivery.latitude,
+        longitude: delivery.longitude,
+      },
+    ]);
+
+    setNameCustomer('');
+    setWeightCustomer('');
+    setSearch('');
+    setGeoloaction({
+      latitude: 0,
+      longitude: 0,
+    });
+  }
+
+  async function handleReset(): Promise<void> {
+    if (window.confirm('Atenção ... Deseja resetar todos os cadastros?')) {
+      setDeliveries([]);
+    }
+  }
+
   return (
     <Container>
       <ContentSide>
         <ContentForm>
           <Input
-            value={customer}
-            onChange={e => setCustomer(e.target.value)}
+            value={nameCustomer}
+            onChange={e => setNameCustomer(e.target.value)}
             placeholder="Nome Cliente"
           />
           <Input
-            value={weight}
-            onChange={e => setweight(e.target.value)}
+            value={weightCustomer}
+            onChange={e => setWeightCustomer(e.target.value)}
             placeholder="Peso da Entrega"
+            type="number"
+            min="1"
+            max="9999"
           />
 
-          <form onSubmit={handleSearch}>
-            <Search>
-              <input
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                placeholder="Endereço do Cliente"
-              />
-              <button type="submit">
-                <FiSearch size={17} />
-              </button>
-            </Search>
-          </form>
+          <Search>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Endereço do Cliente"
+            />
+            <button type="button" onClick={() => handleSearch()}>
+              <FiSearch size={17} />
+            </button>
+          </Search>
 
           <ContentGeolocation>
-            <input type="text" disabled placeholder="Latitude" />
-            <input type="text" disabled placeholder="Longitude" />
+            <input
+              type="text"
+              disabled
+              placeholder="Latitude"
+              value={geolocation?.latitude.toFixed(5)}
+            />
+            <input
+              type="text"
+              disabled
+              placeholder="Longitude"
+              value={geolocation?.longitude.toFixed(5)}
+            />
           </ContentGeolocation>
 
-          <button>CADASTRAR CLIENTE</button>
+          <button type="button" onClick={() => handleForm()}>
+            CADASTRAR CLIENTE
+          </button>
         </ContentForm>
 
         <ContentReset>
-          <button>RESETAR CADASTROS</button>
+          <button type="button" onClick={() => handleReset()}>
+            RESETAR CADASTROS
+          </button>
         </ContentReset>
       </ContentSide>
 
@@ -146,12 +248,15 @@ const Initial: React.FC = () => {
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
             />
-            {locations.map(location => (
-              <Marker key={location.name} position={location.position}>
+            {deliveries.map(delivery => (
+              <Marker
+                key={delivery.name}
+                position={[delivery.latitude, delivery.longitude]}
+              >
                 <Popup>
-                  <b>{location.name}</b>
+                  <b>{delivery.name}</b>
                   <br />
-                  {location.weight}
+                  {delivery.weight}
                 </Popup>
               </Marker>
             ))}
@@ -172,15 +277,15 @@ const Initial: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {locations.map(location => (
-                <tr>
-                  <th>{location.name}</th>
-                  <th>rua</th>
-                  <th>Cidade</th>
-                  <th>País</th>
-                  <th>{location.weight}</th>
-                  <th>{location.position[0]}</th>
-                  <th>{location.position[1]}</th>
+              {deliveries.map(delivery => (
+                <tr key={delivery.name}>
+                  <th>{delivery.name}</th>
+                  <th>{delivery.street}</th>
+                  <th>{delivery.city}</th>
+                  <th>{delivery.country}</th>
+                  <th>{delivery.weight}</th>
+                  <th>{delivery.latitude.toFixed(5)}</th>
+                  <th>{delivery.longitude.toFixed(5)}</th>
                 </tr>
               ))}
             </tbody>
