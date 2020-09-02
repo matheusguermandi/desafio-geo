@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-
+import React, { useState, FormEvent } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
+import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
-
-import { Container, Form, Input, Search, Content } from './styles';
+import { Client } from '@googlemaps/google-maps-services-js';
 
 import api from '../../service/api';
 
+import { Container, ContentForm, Input, Search, ContentMap } from './styles';
 import 'leaflet/dist/leaflet.css';
 
 type Location = Array<{
@@ -21,6 +20,10 @@ type Location = Array<{
 L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.5.0/dist/images/';
 
 const Initial: React.FC = () => {
+  const [customer, setCustomer] = useState('');
+  const [weight, setweight] = useState('');
+  const [search, setSearch] = useState('');
+
   const position: [number, number] = [-20.4027236, -49.9786467];
 
   const [locations, setlocations] = useState<Location>([
@@ -41,20 +44,66 @@ const Initial: React.FC = () => {
     },
   ]);
 
+  const API_KEY = 'AIzaSyAJwTL_WQK7sIhlccPw7XhSLL_uoqlu_ic';
+  const client = new Client();
+
+  async function handleSearch(
+    event: FormEvent<HTMLFormElement>,
+  ): Promise<void> {
+    event.preventDefault();
+    client
+      .geocode({
+        params: {
+          address: search,
+          key: API_KEY,
+        },
+        timeout: 1000,
+      })
+      .then(r => {
+        const { lat, lng } = r.data.results[0].geometry.location;
+        setlocations([
+          ...locations,
+          {
+            name: customer,
+            position: [lat, lng],
+            weight,
+          },
+        ]);
+      })
+      .catch(e => {
+        console.log(e.response.data.error_message);
+      });
+  }
+
   return (
     <Container>
-      <Form>
-        <Input placeholder="Nome Cliente" />
-        <Input placeholder="Peso da Entrega" />
-        <Search>
-          <input placeholder="Endereço do Cliente" />
-          <button type="submit">
-            <FiSearch size={17} />
-          </button>
-        </Search>
-      </Form>
+      <ContentForm>
+        <Input
+          value={customer}
+          onChange={e => setCustomer(e.target.value)}
+          placeholder="Nome Cliente"
+        />
+        <Input
+          value={weight}
+          onChange={e => setweight(e.target.value)}
+          placeholder="Peso da Entrega"
+        />
 
-      <Content>
+        <form onSubmit={handleSearch}>
+          <Search>
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Endereço do Cliente"
+            />
+            <button type="submit">
+              <FiSearch size={17} />
+            </button>
+          </Search>
+        </form>
+      </ContentForm>
+
+      <ContentMap>
         <Map
           className="MAPA"
           center={position}
@@ -75,7 +124,7 @@ const Initial: React.FC = () => {
             </Marker>
           ))}
         </Map>
-      </Content>
+      </ContentMap>
     </Container>
   );
 };

@@ -6,7 +6,7 @@ export const Container = styled.div`
   align-items: stretch;
 `;
 
-export const Form = styled.div`
+export const ContentForm = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -52,7 +52,7 @@ export const Search = styled.div`
   }
 `;
 
-export const Content = styled.div`
+export const ContentMap = styled.div`
   display: flex;
   justify-content: center;
   flex-direction: column;
