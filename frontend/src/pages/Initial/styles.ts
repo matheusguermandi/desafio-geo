@@ -106,7 +106,6 @@ export const ContentGeolocation = styled.div`
 
 export const ContentCentral = styled.div`
   display: flex;
-  justify-content: center;
   flex-direction: column;
 
   width: 75%;
@@ -126,11 +125,12 @@ export const ContentMap = styled.div`
 
 export const ContentTable = styled.div`
   display: flex;
-  flex: 1;
+  flex-direction: column;
   border-radius: 5px;
   margin-top: 10px;
 
   table {
+    margin-bottom: 10px;
     border: 2px solid #bcbcbc;
     border-radius: 5px;
     flex: 1;

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch, FiTrash } from 'react-icons/fi';
 
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -84,6 +84,15 @@ const Initial: React.FC = () => {
   const [deliveries, setDeliveries] = useState<IDeliveries>([]);
 
   async function handleSearch(): Promise<void> {
+    if (!search) {
+      alert('Ooops ... Preencha o endereço do cliente!');
+      setGeoloaction({
+        latitude: 0,
+        longitude: 0,
+      });
+      return;
+    }
+
     client
       .geocode({
         params: {
@@ -247,7 +256,7 @@ const Initial: React.FC = () => {
                 <Popup>
                   <b>{auxDelivery.name}</b>
                   <br />
-                  {auxDelivery.weight}
+                  {auxDelivery.weight}kg
                 </Popup>
               </Marker>
             ))}
@@ -258,6 +267,23 @@ const Initial: React.FC = () => {
           <table>
             <thead>
               <tr>
+                <th>Total de cliente</th>
+                <th>Peso Total</th>
+                <th>Ticket Médio</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>Total de cliente</th>
+                <th>Peso Total</th>
+                <th>Ticket Médio</th>
+              </tr>
+            </tbody>
+          </table>
+
+          <table>
+            <thead>
+              <tr>
                 <th>Nome</th>
                 <th>Rua</th>
                 <th>Cidade</th>
@@ -265,6 +291,7 @@ const Initial: React.FC = () => {
                 <th>Peso</th>
                 <th>LAT</th>
                 <th>LNG</th>
+                <th style={{ color: 'red' }}> X </th>
               </tr>
             </thead>
             <tbody>
@@ -277,6 +304,11 @@ const Initial: React.FC = () => {
                   <th>{auxDelivery.weight}</th>
                   <th>{auxDelivery.latitude.toFixed(5)}</th>
                   <th>{auxDelivery.longitude.toFixed(5)}</th>
+                  <th>
+                    <button type="button" onClick={() => handleSearch()}>
+                      <FiTrash size={17} />
+                    </button>
+                  </th>
                 </tr>
               ))}
             </tbody>
