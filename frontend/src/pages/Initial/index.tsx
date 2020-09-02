@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { FiSearch, FiTrash } from 'react-icons/fi';
 
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -65,6 +65,9 @@ const Initial: React.FC = () => {
   );
   const [geolocation, setGeoloaction] = useState<IGeolocation>();
 
+  const [totalCustomer, setTotalCustomer] = useState(0);
+  const [totalWeight, setTotalWeight] = useState(0);
+
   const position: [number, number] = [-20.4027236, -49.9786467];
 
   const [delivery, setDelivery] = useState<IDelivery>({
@@ -82,6 +85,22 @@ const Initial: React.FC = () => {
   });
 
   const [deliveries, setDeliveries] = useState<IDeliveries>([]);
+
+  const tiket = useMemo(() => {
+    const customers = deliveries.reduce(accumulator => {
+      return accumulator + 1;
+    }, 0);
+
+    setTotalCustomer(customers);
+
+    const weight = deliveries.reduce((accumulator, extra) => {
+      return accumulator + Number(extra.weight);
+    }, 0);
+
+    setTotalWeight(weight);
+
+    return customers > 0 ? weight / customers : 0;
+  }, [deliveries]);
 
   async function handleSearch(): Promise<void> {
     if (!search) {
@@ -274,9 +293,9 @@ const Initial: React.FC = () => {
             </thead>
             <tbody>
               <tr>
-                <th>Total de cliente</th>
-                <th>Peso Total</th>
-                <th>Ticket Médio</th>
+                <th>{totalCustomer}</th>
+                <th>{totalWeight}</th>
+                <th>{tiket}</th>
               </tr>
             </tbody>
           </table>
