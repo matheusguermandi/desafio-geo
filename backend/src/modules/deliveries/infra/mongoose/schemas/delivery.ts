@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const deliveriesShema = new mongoose.Schema({
+const DeliveriesShema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -40,6 +40,6 @@ const deliveriesShema = new mongoose.Schema({
   },
 });
 
-const Delivery = mongoose.model('Deliveries', deliveriesShema);
+const Delivery = mongoose.model('Deliveries', DeliveriesShema);
 
 export default Delivery;
