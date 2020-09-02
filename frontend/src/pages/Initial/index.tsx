@@ -10,24 +10,34 @@ import { Container, Form, Input, Search, Content } from './styles';
 
 import 'leaflet/dist/leaflet.css';
 
-interface Location {
+type Location = Array<{
   name: string;
   position: [number, number];
-  size: number;
-  forecast: string;
-}
+  weight: string;
+}>;
 
 L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.5.0/dist/images/';
 
 const Initial: React.FC = () => {
-  const position: [number, number] = [-23.552694, -46.611978];
+  const position: [number, number] = [-20.4027236, -49.9786467];
 
-  const [locations, setlocations] = useState<Location>({
-    name: 'west',
-    position: [-23.552694, -46.6],
-    size: 40,
-    forecast: 'cloudy',
-  });
+  const [locations, setlocations] = useState<Location>([
+    {
+      name: 'Eduardo',
+      position: [-20.4027236, -49.9786467],
+      weight: '120Kg',
+    },
+    {
+      name: 'Matheus',
+      position: [-20.4027236, -49.96],
+      weight: '80Kg',
+    },
+    {
+      name: 'Thaís',
+      position: [-20.4027236, -49.95],
+      weight: '70Kg',
+    },
+  ]);
 
   return (
     <Container>
@@ -51,11 +61,17 @@ const Initial: React.FC = () => {
         >
           <TileLayer
             attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
           />
-          <Marker position={locations.position}>
-            <Popup>{locations.forecast}</Popup>
-          </Marker>
+          {locations.map(location => (
+            <Marker key={location.name} position={location.position}>
+              <Popup>
+                <b>{location.name}</b>
+                <br />
+                {location.weight}
+              </Popup>
+            </Marker>
+          ))}
         </Map>
       </Content>
     </Container>
