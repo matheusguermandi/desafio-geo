@@ -8,8 +8,18 @@ import { Client } from '@googlemaps/google-maps-services-js';
 
 import api from '../../service/api';
 
-import { Container, ContentForm, Input, Search, ContentMap } from './styles';
 import 'leaflet/dist/leaflet.css';
+import {
+  Container,
+  ContentSide,
+  ContentForm,
+  Input,
+  Search,
+  ContentGeolocation,
+  ContentReset,
+  ContentCentral,
+  ContentMap,
+} from './styles';
 
 type Location = Array<{
   name: string;
@@ -77,54 +87,69 @@ const Initial: React.FC = () => {
 
   return (
     <Container>
-      <ContentForm>
-        <Input
-          value={customer}
-          onChange={e => setCustomer(e.target.value)}
-          placeholder="Nome Cliente"
-        />
-        <Input
-          value={weight}
-          onChange={e => setweight(e.target.value)}
-          placeholder="Peso da Entrega"
-        />
-
-        <form onSubmit={handleSearch}>
-          <Search>
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Endereço do Cliente"
-            />
-            <button type="submit">
-              <FiSearch size={17} />
-            </button>
-          </Search>
-        </form>
-      </ContentForm>
-
-      <ContentMap>
-        <Map
-          className="MAPA"
-          center={position}
-          zoom={14}
-          style={{ width: '100%', height: '100%' }}
-        >
-          <TileLayer
-            attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+      <ContentSide>
+        <ContentForm>
+          <Input
+            value={customer}
+            onChange={e => setCustomer(e.target.value)}
+            placeholder="Nome Cliente"
           />
-          {locations.map(location => (
-            <Marker key={location.name} position={location.position}>
-              <Popup>
-                <b>{location.name}</b>
-                <br />
-                {location.weight}
-              </Popup>
-            </Marker>
-          ))}
-        </Map>
-      </ContentMap>
+          <Input
+            value={weight}
+            onChange={e => setweight(e.target.value)}
+            placeholder="Peso da Entrega"
+          />
+
+          <form onSubmit={handleSearch}>
+            <Search>
+              <input
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Endereço do Cliente"
+              />
+              <button type="submit">
+                <FiSearch size={17} />
+              </button>
+            </Search>
+          </form>
+
+          <ContentGeolocation>
+            <input type="text" disabled placeholder="Latitude" />
+            <input type="text" disabled placeholder="Longitude" />
+          </ContentGeolocation>
+
+          <button>CADASTRAR CLIENTE</button>
+        </ContentForm>
+
+        <ContentReset>
+          <button>RESETAR CADASTROS</button>
+        </ContentReset>
+      </ContentSide>
+
+      <ContentCentral>
+        <ContentMap>
+          <Map
+            className="MAPA"
+            center={position}
+            zoom={14}
+            style={{ width: '100%', height: '100%' }}
+          >
+            <TileLayer
+              attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
+            />
+            {locations.map(location => (
+              <Marker key={location.name} position={location.position}>
+                <Popup>
+                  <b>{location.name}</b>
+                  <br />
+                  {location.weight}
+                </Popup>
+              </Marker>
+            ))}
+          </Map>
+        </ContentMap>
+      </ContentCentral>
     </Container>
   );
 };
