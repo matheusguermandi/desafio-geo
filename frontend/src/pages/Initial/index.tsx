@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState } from 'react';
 import { FiSearch } from 'react-icons/fi';
 
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -6,7 +6,7 @@ import L from 'leaflet';
 
 import { Client } from '@googlemaps/google-maps-services-js';
 
-import api from '../../service/api';
+// import api from '../../service/api';
 
 import 'leaflet/dist/leaflet.css';
 import {
@@ -61,7 +61,7 @@ const Initial: React.FC = () => {
   const [nameCustomer, setNameCustomer] = useState('');
   const [weightCustomer, setWeightCustomer] = useState('');
   const [search, setSearch] = useState(
-    'rua amazonas, 3814, centro, votuporanga',
+    'rua nassif miguel, 1889, pozzobon, votuporanga',
   );
   const [geolocation, setGeoloaction] = useState<IGeolocation>();
 
@@ -81,30 +81,9 @@ const Initial: React.FC = () => {
     longitude: 0,
   });
 
-  const [deliveries, setDeliveries] = useState<IDeliveries>([
-    {
-      name: 'Matheus',
-      weight: '80Kg',
-      street: 'Nassif miguel',
-      city: 'Votuporanga',
-      country: 'Brasil',
-      latitude: -20.4028,
-      longitude: -49.97882,
-    },
-  ]);
+  const [deliveries, setDeliveries] = useState<IDeliveries>([]);
 
   async function handleSearch(): Promise<void> {
-    if (!nameCustomer || !weightCustomer || !search || nameCustomer === '') {
-      alert('Ooops ... Preencha os campos corretamente!');
-      return;
-    }
-
-    if (Number(weightCustomer) <= 0) {
-      alert('Ooops ...Digite uma valor válido para o peso da entrega');
-      setWeightCustomer('');
-      return;
-    }
-
     client
       .geocode({
         params: {
@@ -118,18 +97,23 @@ const Initial: React.FC = () => {
 
         const { lat, lng } = r.data.results[0].geometry.location;
 
+        const aux = r.data.results[0].address_components.length < 7 ? -1 : 0;
+
         setGeoloaction({ latitude: lat, longitude: lng });
 
         setDelivery({
           name: nameCustomer,
           weight: weightCustomer,
-          street: r.data.results[0].address_components[1].long_name,
-          num: Number(r.data.results[0].address_components[0].long_name),
-          neighborhood: r.data.results[0].address_components[2].long_name,
+          street: r.data.results[0].address_components[1 + aux].long_name,
+          num:
+            aux === 0
+              ? Number(r.data.results[0].address_components[0].long_name)
+              : 1,
+          neighborhood: r.data.results[0].address_components[2 + aux].long_name,
           complement: 'Complemento',
-          city: r.data.results[0].address_components[3].long_name,
-          state: r.data.results[0].address_components[4].long_name,
-          country: r.data.results[0].address_components[5].long_name,
+          city: r.data.results[0].address_components[3 + aux].long_name,
+          state: r.data.results[0].address_components[4 + aux].long_name,
+          country: r.data.results[0].address_components[5 + aux].long_name,
           latitude: lat,
           longitude: lng,
         });
@@ -141,22 +125,29 @@ const Initial: React.FC = () => {
   }
 
   async function handleForm(): Promise<void> {
-    if (
-      !nameCustomer ||
-      !weightCustomer ||
-      !search ||
-      !geolocation?.latitude ||
-      !geolocation?.longitude
-    ) {
+    if (!nameCustomer || !weightCustomer || !search) {
       alert('Ooops ... Preencha os campos corretamente!');
+      return;
+    }
+
+    if (Number(weightCustomer) <= 0) {
+      alert('Ooops ...Digite uma valor válido para o peso da entrega');
+      setWeightCustomer('');
+      return;
+    }
+
+    if (!geolocation?.latitude || !geolocation?.longitude) {
+      alert(
+        'Ooops ... Realize a busca do endereço antes de cadastrar o cliente!',
+      );
       return;
     }
 
     setDeliveries([
       ...deliveries,
       {
-        name: delivery.name,
-        weight: delivery.weight,
+        name: nameCustomer,
+        weight: weightCustomer,
         city: delivery.city,
         country: delivery.country,
         street: delivery.street,
@@ -248,15 +239,15 @@ const Initial: React.FC = () => {
               attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
             />
-            {deliveries.map(delivery => (
+            {deliveries.map(auxDelivery => (
               <Marker
-                key={delivery.name}
-                position={[delivery.latitude, delivery.longitude]}
+                key={auxDelivery.name}
+                position={[auxDelivery.latitude, auxDelivery.longitude]}
               >
                 <Popup>
-                  <b>{delivery.name}</b>
+                  <b>{auxDelivery.name}</b>
                   <br />
-                  {delivery.weight}
+                  {auxDelivery.weight}
                 </Popup>
               </Marker>
             ))}
@@ -277,15 +268,15 @@ const Initial: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {deliveries.map(delivery => (
-                <tr key={delivery.name}>
-                  <th>{delivery.name}</th>
-                  <th>{delivery.street}</th>
-                  <th>{delivery.city}</th>
-                  <th>{delivery.country}</th>
-                  <th>{delivery.weight}</th>
-                  <th>{delivery.latitude.toFixed(5)}</th>
-                  <th>{delivery.longitude.toFixed(5)}</th>
+              {deliveries.map(auxDelivery => (
+                <tr key={auxDelivery.name}>
+                  <th>{auxDelivery.name}</th>
+                  <th>{auxDelivery.street}</th>
+                  <th>{auxDelivery.city}</th>
+                  <th>{auxDelivery.country}</th>
+                  <th>{auxDelivery.weight}</th>
+                  <th>{auxDelivery.latitude.toFixed(5)}</th>
+                  <th>{auxDelivery.longitude.toFixed(5)}</th>
                 </tr>
               ))}
             </tbody>
