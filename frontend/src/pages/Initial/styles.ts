@@ -61,5 +61,6 @@ export const Content = styled.div`
   max-width: 900px;
   max-height: 500px;
 
-  background: #bcbcbc;
+  border: 2px solid #bcbcbc;
+  border-radius: 5px;
 `;
