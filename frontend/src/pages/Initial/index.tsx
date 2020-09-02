@@ -8,6 +8,8 @@ import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 
 import { Container, Form, Input, Search, Content } from './styles';
 
+import api from '../../service/api';
+
 import 'leaflet/dist/leaflet.css';
 
 type Location = Array<{
