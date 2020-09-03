@@ -44,6 +44,8 @@
     "import/no-duplicates": "off",
     "@typescript-eslint/camelcase": "off",
     "no-underscore-dangle": "off",
+    "array-callback-return": "off",
+    "consistent-return": "off",
     "@typescript-eslint/explicit-function-return-type": [
       "error",
       {

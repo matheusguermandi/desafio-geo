@@ -65,8 +65,8 @@ const Initial: React.FC = () => {
 
   // Localização - Roteirizador RoutEasy
   const [position, setPosition] = useState<IGeolocation>({
-    latitude: -23.596,
-    longitude: -46.648,
+    latitude: -23.596584,
+    longitude: -46.648904,
   });
 
   const [totalCustomer, setTotalCustomer] = useState(0);
