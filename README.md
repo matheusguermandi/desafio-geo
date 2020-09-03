@@ -9,14 +9,6 @@
 1. Faça um clone desse repositório;</br>
    git clone https://github.com/matheusguermandi/desafio-geo.git
    
-### Iniciar aplicação - Frontend
-1. Com o terminal aberto, verifique se está na pasta `desafio-geo\frontend`;</br>
-   Caso não esteja execute o comando `cd desafio-geo\frontend`
-   
-2. Execute `yarn` para realizar a instalação das dependencias;
-
-3. Execute `yarn start` para realizar a inicialização da aplicação;
-
 ### Iniciar aplicação - Backend
 1. Com o terminal aberto, verifique se está na pasta `desafio-geo\backend`;</br>
    Caso não esteja execute o comando `desafio-geo\backend`
@@ -24,6 +16,14 @@
 2. Execute `yarn` para realizar a instalação das dependencias;
 
 3. Execute `yarn dev:server` para realizar a inicialização da aplicação;
+
+### Iniciar aplicação - Frontend
+1. Com o terminal aberto, verifique se está na pasta `desafio-geo\frontend`;</br>
+   Caso não esteja execute o comando `cd desafio-geo\frontend`
+   
+2. Execute `yarn` para realizar a instalação das dependencias;
+
+3. Execute `yarn start` para realizar a inicialização da aplicação;
 
 ## Importar rotas para o Insomnia
 [![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=DESAFIO%20ROUTEASY&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fmatheusguermandi%2Fdesafio-geo%2Fmaster%2Fbackend%2Finsomnia.json%3Ftoken%3DAGUMDXI3XM2QNSS2GI7E6DK7LILN4)
