@@ -3,9 +3,7 @@ import Delivery from '../../mongoose/schemas/Delivery';
 
 export default class DeliveriesController {
   public async store(request: Request, response: Response): Promise<Response> {
-    const data = await Delivery.find().select(
-      'name street city country weight latitude longitude',
-    );
+    const data = await Delivery.find();
     return response.json(data);
   }
 
