@@ -23,28 +23,22 @@ import {
 } from './styles';
 
 interface IDelivery {
-  name: string;
-  weight: string;
-  street: string;
-  number: number;
-  neighborhood: string;
-  complement?: string;
-  city: string;
-  state: string;
-  country: string;
-  latitude: number;
-  longitude: number;
-}
-
-interface IDeliveries {
   _id: string;
   name: string;
-  street: string;
-  city: string;
-  country: string;
   weight: string;
-  latitude: number;
-  longitude: number;
+  address: {
+    street: string;
+    number: number;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    country: string;
+    geolocation: {
+      latitude: number;
+      longitude: number;
+    };
+  };
 }
 
 interface IGeolocation {
@@ -72,19 +66,23 @@ const Initial: React.FC = () => {
   const [totalCustomer, setTotalCustomer] = useState(0);
   const [totalWeight, setTotalWeight] = useState(0);
 
-  const [deliveries, setDeliveries] = useState<IDeliveries[]>([]);
-  const [delivery, setDelivery] = useState<IDelivery>({
+  const [deliveries, setDeliveries] = useState<IDelivery[]>([]);
+  const [delivery, setDelivery] = useState<Omit<IDelivery, '_id'>>({
     name: '',
     weight: '',
-    number: 0,
-    street: '',
-    neighborhood: '',
-    complement: '',
-    state: '',
-    city: '',
-    country: '',
-    latitude: 0,
-    longitude: 0,
+    address: {
+      number: 0,
+      street: '',
+      neighborhood: '',
+      complement: '',
+      state: '',
+      city: '',
+      country: '',
+      geolocation: {
+        latitude: 0,
+        longitude: 0,
+      },
+    },
   });
 
   const tiket = useMemo(() => {
@@ -109,6 +107,16 @@ const Initial: React.FC = () => {
     });
   }, []);
 
+  function clear(): void {
+    setNameCustomer('');
+    setWeightCustomer('');
+    setSearch('');
+    setGeoloaction({
+      latitude: 0,
+      longitude: 0,
+    });
+  }
+
   async function handleSearch(): Promise<void> {
     if (!nameCustomer || !weightCustomer || !search) {
       alert(
@@ -130,31 +138,38 @@ const Initial: React.FC = () => {
         timeout: 1000,
       })
       .then(r => {
-        const { lat, lng } = r.data.results[0].geometry.location;
-        setGeoloaction({ latitude: lat, longitude: lng });
+        const address = r.data.results[0].address_components;
+        const geolocations = r.data.results[0].geometry.location;
 
-        // variável auxiliar - Utilizada quando o retorno da api vem faltando o número do endereço
-        const aux = r.data.results[0].address_components.length < 7 ? -1 : 0;
-
-        setDelivery({
-          name: nameCustomer,
-          weight: weightCustomer,
-          number:
-            aux === 0
-              ? Number(r.data.results[0].address_components[0].long_name)
-              : 1,
-          complement: 'Complemento',
-          street: r.data.results[0].address_components[1 + aux].long_name,
-          neighborhood: r.data.results[0].address_components[2 + aux].long_name,
-          city: r.data.results[0].address_components[3 + aux].long_name,
-          state: r.data.results[0].address_components[4 + aux].long_name,
-          country: r.data.results[0].address_components[5 + aux].long_name,
-          latitude: lat,
-          longitude: lng,
-        });
+        if (address.length >= 6) {
+          setDelivery({
+            name: nameCustomer,
+            weight: weightCustomer,
+            address: {
+              number: Number(address[0].long_name),
+              street: address[1].long_name,
+              neighborhood: address[2].long_name,
+              city: address[3].long_name,
+              state: address[4].long_name,
+              country: address[5].long_name,
+              geolocation: {
+                latitude: geolocations.lat,
+                longitude: geolocations.lng,
+              },
+            },
+          });
+          setGeoloaction({
+            latitude: geolocations.lat,
+            longitude: geolocations.lng,
+          });
+        } else {
+          setSearch('');
+          alert('Oops ... Endereço incompleto!');
+        }
       })
       .catch(e => {
         setSearch('');
+        console.log(e);
         alert('Atenção ... Endereço não encontrado, tente novamente!');
       });
   }
@@ -184,22 +199,15 @@ const Initial: React.FC = () => {
       return;
     }
 
-    await api.post<IDeliveries>('/ ', delivery).then(response => {
+    await api.post<IDelivery>('/ ', delivery).then(response => {
       const newDelivery = response.data;
       setDeliveries([...deliveries, { ...newDelivery }]);
     });
 
+    clear();
     setPosition({
       latitude: geolocation.latitude,
       longitude: geolocation.longitude,
-    });
-
-    setNameCustomer('');
-    setWeightCustomer('');
-    setSearch('');
-    setGeoloaction({
-      latitude: 0,
-      longitude: 0,
     });
   }
 
@@ -293,8 +301,11 @@ const Initial: React.FC = () => {
             />
             {deliveries.map(auxDelivery => (
               <Marker
-                key={auxDelivery.name}
-                position={[auxDelivery.latitude, auxDelivery.longitude]}
+                key={auxDelivery._id}
+                position={[
+                  auxDelivery.address.geolocation.latitude,
+                  auxDelivery.address.geolocation.longitude,
+                ]}
               >
                 <Popup>
                   <b>{auxDelivery.name}</b>
@@ -339,14 +350,16 @@ const Initial: React.FC = () => {
             </thead>
             <tbody>
               {deliveries.map(auxDelivery => (
-                <tr key={auxDelivery.name}>
+                <tr key={auxDelivery._id}>
                   <th>{auxDelivery.name}</th>
-                  <th>{auxDelivery.street}</th>
-                  <th>{auxDelivery.city}</th>
-                  <th>{auxDelivery.country}</th>
+                  <th>{auxDelivery.address.street}</th>
+                  <th>{auxDelivery.address.city}</th>
+                  <th>{auxDelivery.address.country}</th>
                   <th>{auxDelivery.weight}</th>
-                  <th>{auxDelivery.latitude.toFixed(3)}</th>
-                  <th>{auxDelivery.longitude.toFixed(3)}</th>
+                  <th>{auxDelivery.address.geolocation.latitude.toFixed(3)}</th>
+                  <th>
+                    {auxDelivery.address.geolocation.longitude.toFixed(3)}
+                  </th>
                   <th>
                     <button
                       type="button"
