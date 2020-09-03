@@ -3,7 +3,7 @@
   Desafio - desenvolvedor Full Stack 
 </h1>
  
-![routeasy](https://user-images.githubusercontent.com/27836893/92110595-57755600-edc1-11ea-8665-1640976935ab.PNG)
+![routeasy](https://user-images.githubusercontent.com/27836893/92114648-90182e00-edc7-11ea-9fb5-8173f7176c7e.PNG)
 
 ## :construction_worker: Instalação e execução
 1. Faça um clone desse repositório;</br>
