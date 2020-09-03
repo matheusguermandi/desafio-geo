@@ -248,7 +248,7 @@ const Initial: React.FC = () => {
               placeholder="Endereço do Cliente"
             />
             <button type="button" onClick={() => handleSearch()}>
-              <FiSearch size={11} />
+              <FiSearch size={20} />
             </button>
           </Search>
 
