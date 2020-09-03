@@ -60,16 +60,19 @@ const Initial: React.FC = () => {
 
   const [nameCustomer, setNameCustomer] = useState('');
   const [weightCustomer, setWeightCustomer] = useState('');
-  const [search, setSearch] = useState(
-    'rua nassif miguel, 1889, pozzobon, votuporanga',
-  );
+  const [search, setSearch] = useState('');
   const [geolocation, setGeoloaction] = useState<IGeolocation>();
+
+  // Localização - Roteirizador RoutEasy
+  const [position, setPosition] = useState<IGeolocation>({
+    latitude: -23.596,
+    longitude: -46.648,
+  });
 
   const [totalCustomer, setTotalCustomer] = useState(0);
   const [totalWeight, setTotalWeight] = useState(0);
 
-  const position: [number, number] = [-20.4027236, -49.9786467];
-
+  const [deliveries, setDeliveries] = useState<IDeliveries[]>([]);
   const [delivery, setDelivery] = useState<IDelivery>({
     name: '',
     weight: '',
@@ -83,8 +86,6 @@ const Initial: React.FC = () => {
     latitude: 0,
     longitude: 0,
   });
-
-  const [deliveries, setDeliveries] = useState<IDeliveries[]>([]);
 
   const tiket = useMemo(() => {
     const customers = deliveries.reduce(accumulator => {
@@ -110,7 +111,9 @@ const Initial: React.FC = () => {
 
   async function handleSearch(): Promise<void> {
     if (!nameCustomer || !weightCustomer || !search) {
-      alert('Atenção ...\nPreencha todos os campos corretamente!');
+      alert(
+        'Atenção ...\nPreencha todos os campos(Nome, Peso e Endereço) corretamente para realizar a busca!',
+      );
       setGeoloaction({
         latitude: 0,
         longitude: 0,
@@ -158,7 +161,9 @@ const Initial: React.FC = () => {
 
   async function handleForm(): Promise<void> {
     if (!nameCustomer || !weightCustomer || !search) {
-      alert('Atenção ...\nPreencha todos os campos corretamente!');
+      alert(
+        'Atenção ...\nPreencha todos os campos(Nome, Peso e Endereço) corretamente para realizar o cadastro!',
+      );
       setGeoloaction({
         latitude: 0,
         longitude: 0,
@@ -184,6 +189,11 @@ const Initial: React.FC = () => {
       setDeliveries([...deliveries, { ...newDelivery }]);
     });
 
+    setPosition({
+      latitude: geolocation.latitude,
+      longitude: geolocation.longitude,
+    });
+
     setNameCustomer('');
     setWeightCustomer('');
     setSearch('');
@@ -196,9 +206,9 @@ const Initial: React.FC = () => {
   async function handleDelete(id: string): Promise<void> {
     if (window.confirm('Atenção ... Deseja excluir esse cadastro?')) {
       setDeliveries(
-        deliveries.filter(p => {
-          if (p._id !== id) {
-            return p;
+        deliveries.filter(d => {
+          if (d._id !== id) {
+            return d;
           }
         }),
       );
@@ -238,7 +248,7 @@ const Initial: React.FC = () => {
               placeholder="Endereço do Cliente"
             />
             <button type="button" onClick={() => handleSearch()}>
-              <FiSearch size={17} />
+              <FiSearch size={11} />
             </button>
           </Search>
 
@@ -272,8 +282,8 @@ const Initial: React.FC = () => {
       <ContentCentral>
         <ContentMap>
           <Map
-            className="MAPA"
-            center={position}
+            className="MAP"
+            center={[position.latitude, position.longitude]}
             zoom={14}
             style={{ width: '100%', height: '100%' }}
           >
@@ -322,8 +332,8 @@ const Initial: React.FC = () => {
                 <th>Cidade</th>
                 <th>País</th>
                 <th>Peso</th>
-                <th>LAT</th>
-                <th>LNG</th>
+                <th>Lat</th>
+                <th>Lng</th>
                 <th style={{ color: 'red' }}> X </th>
               </tr>
             </thead>
@@ -335,8 +345,8 @@ const Initial: React.FC = () => {
                   <th>{auxDelivery.city}</th>
                   <th>{auxDelivery.country}</th>
                   <th>{auxDelivery.weight}</th>
-                  <th>{auxDelivery.latitude.toFixed(5)}</th>
-                  <th>{auxDelivery.longitude.toFixed(5)}</th>
+                  <th>{auxDelivery.latitude.toFixed(3)}</th>
+                  <th>{auxDelivery.longitude.toFixed(3)}</th>
                   <th>
                     <button
                       type="button"
