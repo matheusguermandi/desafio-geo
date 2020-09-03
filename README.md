@@ -11,7 +11,7 @@
    
 ### Iniciar aplicação - Backend
 1. Com o terminal aberto, verifique se está na pasta `desafio-geo\backend`;</br>
-   Caso não esteja execute o comando `desafio-geo\backend`
+   Caso não esteja execute o comando `cd desafio-geo\backend`
    
 2. Execute `yarn` para realizar a instalação das dependencias;
 
