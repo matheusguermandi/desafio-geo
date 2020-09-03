@@ -2,8 +2,10 @@ import { Request, Response } from 'express';
 import Delivery from '../../mongoose/schemas/Delivery';
 
 export default class DeliveriesController {
-  public async find(response: Response): Promise<Response> {
-    const data = await Delivery.find();
+  public async store(request: Request, response: Response): Promise<Response> {
+    const data = await Delivery.find().select(
+      'name street city country weight latitude longitude',
+    );
     return response.json(data);
   }
 
@@ -14,8 +16,16 @@ export default class DeliveriesController {
 
   public async delete(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
-    await Delivery.findOneAndRemove({ id });
+    await Delivery.deleteOne({ _id: id });
 
+    return response.json({ msg: 'Delivery deleted' });
+  }
+
+  public async deleteall(
+    request: Request,
+    response: Response,
+  ): Promise<Response> {
+    await Delivery.deleteMany({});
     return response.json({ msg: 'Delivery deleted' });
   }
 }

@@ -6,10 +6,14 @@ const DeliveriesShema = new mongoose.Schema({
     required: true,
   },
   weight: {
+    type: Number,
+    required: true,
+  },
+  street: {
     type: String,
     required: true,
   },
-  num: {
+  number: {
     type: Number,
   },
   neighborhood: {
@@ -27,7 +31,7 @@ const DeliveriesShema = new mongoose.Schema({
     required: true,
   },
   country: {
-    type: Number,
+    type: String,
     required: true,
   },
   latitude: {

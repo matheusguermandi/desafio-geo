@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { FiSearch, FiTrash } from 'react-icons/fi';
 
 import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -6,7 +6,7 @@ import L from 'leaflet';
 
 import { Client } from '@googlemaps/google-maps-services-js';
 
-// import api from '../../service/api';
+import api from '../../service/api';
 
 import 'leaflet/dist/leaflet.css';
 import {
@@ -26,7 +26,7 @@ interface IDelivery {
   name: string;
   weight: string;
   street: string;
-  num: number;
+  number: number;
   neighborhood: string;
   complement?: string;
   city: string;
@@ -36,8 +36,8 @@ interface IDelivery {
   longitude: number;
 }
 
-type IDeliveries = Array<{
-  id?: string;
+interface IDeliveries {
+  _id: string;
   name: string;
   street: string;
   city: string;
@@ -45,7 +45,7 @@ type IDeliveries = Array<{
   weight: string;
   latitude: number;
   longitude: number;
-}>;
+}
 
 interface IGeolocation {
   latitude: number;
@@ -73,7 +73,7 @@ const Initial: React.FC = () => {
   const [delivery, setDelivery] = useState<IDelivery>({
     name: '',
     weight: '',
-    num: 0,
+    number: 0,
     street: '',
     neighborhood: '',
     complement: '',
@@ -84,7 +84,7 @@ const Initial: React.FC = () => {
     longitude: 0,
   });
 
-  const [deliveries, setDeliveries] = useState<IDeliveries>([]);
+  const [deliveries, setDeliveries] = useState<IDeliveries[]>([]);
 
   const tiket = useMemo(() => {
     const customers = deliveries.reduce(accumulator => {
@@ -102,9 +102,15 @@ const Initial: React.FC = () => {
     return customers > 0 ? weight / customers : 0;
   }, [deliveries]);
 
+  useEffect(() => {
+    api.get(`/`).then(response => {
+      setDeliveries(response.data);
+    });
+  }, []);
+
   async function handleSearch(): Promise<void> {
-    if (!search) {
-      alert('Ooops ... Preencha o endereço do cliente!');
+    if (!nameCustomer || !weightCustomer || !search) {
+      alert('Atenção ...\nPreencha todos os campos corretamente!');
       setGeoloaction({
         latitude: 0,
         longitude: 0,
@@ -121,24 +127,22 @@ const Initial: React.FC = () => {
         timeout: 1000,
       })
       .then(r => {
-        console.log(r.data.results[0]);
-
         const { lat, lng } = r.data.results[0].geometry.location;
-
-        const aux = r.data.results[0].address_components.length < 7 ? -1 : 0;
-
         setGeoloaction({ latitude: lat, longitude: lng });
+
+        // variável auxiliar - Utilizada quando o retorno da api vem faltando o número do endereço
+        const aux = r.data.results[0].address_components.length < 7 ? -1 : 0;
 
         setDelivery({
           name: nameCustomer,
           weight: weightCustomer,
-          street: r.data.results[0].address_components[1 + aux].long_name,
-          num:
+          number:
             aux === 0
               ? Number(r.data.results[0].address_components[0].long_name)
               : 1,
-          neighborhood: r.data.results[0].address_components[2 + aux].long_name,
           complement: 'Complemento',
+          street: r.data.results[0].address_components[1 + aux].long_name,
+          neighborhood: r.data.results[0].address_components[2 + aux].long_name,
           city: r.data.results[0].address_components[3 + aux].long_name,
           state: r.data.results[0].address_components[4 + aux].long_name,
           country: r.data.results[0].address_components[5 + aux].long_name,
@@ -148,41 +152,37 @@ const Initial: React.FC = () => {
       })
       .catch(e => {
         setSearch('');
-        alert('Atenção ... Endereço não encontrado, tente novamente');
+        alert('Atenção ... Endereço não encontrado, tente novamente!');
       });
   }
 
   async function handleForm(): Promise<void> {
     if (!nameCustomer || !weightCustomer || !search) {
-      alert('Ooops ... Preencha os campos corretamente!');
+      alert('Atenção ...\nPreencha todos os campos corretamente!');
+      setGeoloaction({
+        latitude: 0,
+        longitude: 0,
+      });
       return;
     }
 
     if (Number(weightCustomer) <= 0) {
-      alert('Ooops ...Digite uma valor válido para o peso da entrega');
+      alert('Atenção ...\nDigite uma valor válido para o peso da entrega!');
       setWeightCustomer('');
       return;
     }
 
     if (!geolocation?.latitude || !geolocation?.longitude) {
       alert(
-        'Ooops ... Realize a busca do endereço antes de cadastrar o cliente!',
+        'Atenção ...\nRealize a busca do endereço antes de cadastrar o cliente!',
       );
       return;
     }
 
-    setDeliveries([
-      ...deliveries,
-      {
-        name: nameCustomer,
-        weight: weightCustomer,
-        city: delivery.city,
-        country: delivery.country,
-        street: delivery.street,
-        latitude: delivery.latitude,
-        longitude: delivery.longitude,
-      },
-    ]);
+    await api.post<IDeliveries>('/ ', delivery).then(response => {
+      const newDelivery = response.data;
+      setDeliveries([...deliveries, { ...newDelivery }]);
+    });
 
     setNameCustomer('');
     setWeightCustomer('');
@@ -193,8 +193,22 @@ const Initial: React.FC = () => {
     });
   }
 
+  async function handleDelete(id: string): Promise<void> {
+    if (window.confirm('Atenção ... Deseja excluir esse cadastro?')) {
+      setDeliveries(
+        deliveries.filter(p => {
+          if (p._id !== id) {
+            return p;
+          }
+        }),
+      );
+      await api.delete(`/${id}`);
+    }
+  }
+
   async function handleReset(): Promise<void> {
     if (window.confirm('Atenção ... Deseja resetar todos os cadastros?')) {
+      await api.delete('/');
       setDeliveries([]);
     }
   }
@@ -324,7 +338,10 @@ const Initial: React.FC = () => {
                   <th>{auxDelivery.latitude.toFixed(5)}</th>
                   <th>{auxDelivery.longitude.toFixed(5)}</th>
                   <th>
-                    <button type="button" onClick={() => handleSearch()}>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(auxDelivery._id)}
+                    >
                       <FiTrash size={17} />
                     </button>
                   </th>
