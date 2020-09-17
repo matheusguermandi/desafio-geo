@@ -23,7 +23,11 @@
    
 2. Execute `yarn` para realizar a instalação das dependencias;
 
-3. Execute `yarn start` para realizar a inicialização da aplicação;
+3. Crie um arquivo .env e copie o conteudo do .env.example
+
+4. Complete a API KEY do google no .env (OBS: Passo importante para o funcionamento correto da aplicação)
+
+5. Execute `yarn start` para realizar a inicialização da aplicação;
 
 ## 📝 Rotas utilizadas
 Rotas | Método 
