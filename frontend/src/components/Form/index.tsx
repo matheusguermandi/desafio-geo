@@ -43,9 +43,7 @@ const Form: React.FC = () => {
 
   const [nameCustomer, setNameCustomer] = useState('');
   const [weightCustomer, setWeightCustomer] = useState('');
-  const [search, setSearch] = useState(
-    'rua amazonas, 3814, centro, Votuporanga',
-  );
+  const [search, setSearch] = useState('');
   const [geolocation, setGeoloaction] = useState<IGeolocation>({
     latitude: 0,
     longitude: 0,
