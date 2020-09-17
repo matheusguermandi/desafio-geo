@@ -50,7 +50,7 @@ L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.5.0/dist/images/';
 
 const Initial: React.FC = () => {
   const client = new Client();
-  const API_KEY = 'AIzaSyAJwTL_WQK7sIhlccPw7XhSLL_uoqlu_ic';
+  const { REACT_APP_API_KEY } = process.env;
 
   const [nameCustomer, setNameCustomer] = useState('');
   const [weightCustomer, setWeightCustomer] = useState('');
@@ -133,7 +133,7 @@ const Initial: React.FC = () => {
       .geocode({
         params: {
           address: search,
-          key: API_KEY,
+          key: String(REACT_APP_API_KEY),
         },
         timeout: 1000,
       })
