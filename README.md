@@ -25,7 +25,7 @@
 
 3. Execute `yarn start` para realizar a inicialização da aplicação;
 
-## Rotas utilizadas
+## 📝 Rotas utilizadas
 Rotas | Método 
 ------|--------
 /deliveries| GET
@@ -33,6 +33,6 @@ Rotas | Método
 /deliveries/:id| DELETE
 /deliveries| DELETE
 
-## Importar rotas para o Insomnia
-[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=DESAFIO%20ROUTEASY&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fmatheusguermandi%2Fdesafio-geo%2Fmaster%2Fbackend%2Finsomnia.json%3Ftoken%3DAGUMDXI3XM2QNSS2GI7E6DK7LILN4)
+## 🚀 Importar rotas para o Insomnia
+[![Run in Insomnia}](https://insomnia.rest/images/run.svg)](https://insomnia.rest/run/?label=DESAFIO%20ROUTEASY&uri=https%3A%2F%2Fraw.githubusercontent.com%2Fmatheusguermandi%2Fdesafio-geo%2Fmaster%2Fbackend%2Finsomnia.json%3Ftoken%3DAGUMDXKWK3IUAL5P4SS4W6C7LOUIW)
 
