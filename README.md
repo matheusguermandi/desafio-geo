@@ -26,7 +26,7 @@
 
 3. Crie um arquivo .env dentro da pastar \src 
 
-4. Copie o conteudo do .env.example e complete a API KEY do google</br>
+4. Copie o conteudo do .env.example no .env e complete a API KEY do google</br>
    **OBS: Esse passo é de suma importância para o funcionamento correto da aplicação**
 
 5. Execute `yarn start` para realizar a inicialização da aplicação;
