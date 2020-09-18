@@ -1,11 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import { FiTrash } from 'react-icons/fi';
+import { GoLocation } from 'react-icons/go';
 import { useDelivery } from '../../hooks/delivery';
+import { usePosition } from '../../hooks/position';
 
 import { Container } from './styles';
 
 const Table: React.FC = () => {
   const { deliveries, deleteDelivery } = useDelivery();
+
+  const { updatePosition } = usePosition();
 
   const [totalCustomer, setTotalCustomer] = useState(0);
   const [totalWeight, setTotalWeight] = useState(0);
@@ -64,6 +68,7 @@ const Table: React.FC = () => {
             <th>Peso</th>
             <th>Lat</th>
             <th>Lng</th>
+            <th style={{ color: 'red' }}> IR </th>
             <th style={{ color: 'red' }}> X </th>
           </tr>
         </thead>
@@ -77,6 +82,14 @@ const Table: React.FC = () => {
               <th>{delivery.weight}</th>
               <th>{delivery.address.geolocation.latitude.toFixed(3)}</th>
               <th>{delivery.address.geolocation.longitude.toFixed(3)}</th>
+              <th>
+                <button
+                  type="button"
+                  onClick={() => updatePosition(delivery.address.geolocation)}
+                >
+                  <GoLocation size={17} />
+                </button>
+              </th>
               <th>
                 <button
                   type="button"
