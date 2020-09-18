@@ -1,9 +1,12 @@
 import React from 'react';
 
 import { DeliveryProvider } from './delivery';
+import { PositionProvider } from './position';
 
 const AppProvider: React.FC = ({ children }) => (
-  <DeliveryProvider>{children}</DeliveryProvider>
+  <DeliveryProvider>
+    <PositionProvider>{children}</PositionProvider>
+  </DeliveryProvider>
 );
 
 export default AppProvider;
