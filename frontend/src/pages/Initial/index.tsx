@@ -13,6 +13,7 @@ const Initial: React.FC = () => {
 
       <ContentCentral>
         <Map />
+
         <Table />
       </ContentCentral>
     </Container>
