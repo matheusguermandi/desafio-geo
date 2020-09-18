@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Map as Mapa, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -7,21 +7,13 @@ import 'leaflet/dist/leaflet.css';
 
 import { Container } from './styles';
 import { useDelivery } from '../../hooks/delivery';
+import { usePosition } from '../../hooks/position';
 
 L.Icon.Default.imagePath = 'https://unpkg.com/leaflet@1.5.0/dist/images/';
 
-interface IGeolocation {
-  latitude: number;
-  longitude: number;
-}
-
 const Map: React.FC = () => {
   const { deliveries } = useDelivery();
-
-  const [position, setPosition] = useState<IGeolocation>({
-    latitude: -20.4028012,
-    longitude: -49.9788157,
-  });
+  const { position } = usePosition();
 
   return (
     <Container>
