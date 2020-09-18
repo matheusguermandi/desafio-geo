@@ -3,7 +3,8 @@
   Desafio - desenvolvedor Full Stack 
 </h1>
  
-![routeasy](https://user-images.githubusercontent.com/27836893/92114648-90182e00-edc7-11ea-9fb5-8173f7176c7e.PNG)
+![Capturar](https://user-images.githubusercontent.com/27836893/93636351-26ed0900-f9ca-11ea-82be-be32309a9470.PNG)
+
 
 ## :construction_worker: Instalação e execução
 1. Faça um clone desse repositório;</br>
@@ -23,9 +24,10 @@
    
 2. Execute `yarn` para realizar a instalação das dependencias;
 
-3. Crie um arquivo .env e copie o conteudo do .env.example
+3. Crie um arquivo .env dentro da pastar \src 
 
-4. Complete a API KEY do google no .env (OBS: Passo importante para o funcionamento correto da aplicação)
+4. Copie o conteudo do .env.example e complete a API KEY do google</br>
+   **OBS: Esse passo é de suma importância para o funcionamento correto da aplicação**
 
 5. Execute `yarn start` para realizar a inicialização da aplicação;
 
