@@ -13,6 +13,7 @@ import {
 } from './styles';
 
 import { useDelivery } from '../../hooks/delivery';
+import { usePosition } from '../../hooks/position';
 
 interface IDelivery {
   name: string;
@@ -44,6 +45,7 @@ const Form: React.FC = () => {
   const [nameCustomer, setNameCustomer] = useState('');
   const [weightCustomer, setWeightCustomer] = useState('');
   const [search, setSearch] = useState('');
+
   const [geolocation, setGeoloaction] = useState<IGeolocation>({
     latitude: 0,
     longitude: 0,
@@ -52,6 +54,8 @@ const Form: React.FC = () => {
   const [delivery, setDelivery] = useState<IDelivery>({} as IDelivery);
 
   const { createDelivery, resetDelivery } = useDelivery();
+
+  const { updatePosition } = usePosition();
 
   async function handleSearch(): Promise<void> {
     if (!nameCustomer || !weightCustomer || !search) {
@@ -140,6 +144,11 @@ const Form: React.FC = () => {
       }
 
       createDelivery(delivery);
+
+      updatePosition({
+        latitude: geolocation.latitude,
+        longitude: geolocation.longitude,
+      });
 
       clear();
     } catch (error) {
